@@ -74,24 +74,37 @@ const processTurn = function(game) {
 	sketch.text(game.turnPhase, 610, 25); // for debugging purposes
 
 	switch (game.turnPhase) {
+	case 0:
 	case 1:
 	case 2:
-		if (keys.isPressed(keyNames.cancel)) {
-			if (party[game.turnPhase].current.hp > 0) {
-				game.turnPhase -= 2;
-			} else if (party[0].current.hp > 0) {
-				game.turnPhase -= 4;
+		// When current character is down
+		if (party[game.turnPhase].current.hp <= 0) {
+			phaseForward(game);
+		}
+
+		// When an option is selected
+		if (keys.isPressed(keyNames.select)) {
+			if(game.turnPhase != 2) {
+				phaseForward(game);
+			}
+			else {
+				phaseForward(game);
+			}
+		}
+
+		// When pressing cancel
+		if (keys.isPressed(keyNames.cancel) && game.turnPhase != 0) {
+			// Move to a previous character that is alive.
+			phaseBack(game);
 			}
 		}
 		//fallthrough
-	case 0:
+	/*case 0:
 		if (game.turnPhase <= 2 && party[game.turnPhase].current.hp <= 0) {
 			game.turnPhase++;
-		}
+		}*/
 
-		if (keys.isPressed(keyNames.select)) {
-			game.turnPhase++;
-		}
+		
 		break;
 	// skipping some cases here for now; I want to start adding Jevil's attacks ASAP
 	case 10:
