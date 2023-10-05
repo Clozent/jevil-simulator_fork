@@ -16,6 +16,58 @@ TODO: shift other turnPhase numbers to adjust for removal of turnPhases 3-5
 
 import { attacks, attackData, executeAttack } from "./attack_handler.js";
 
+/**
+ * Moves the character selection to the next available game phase.
+ *
+ * @param {Game} game - The game object.
+ */
+const phaseForward = function(game) {
+	const { party, turnPhase} = game;
+	
+	let steps = 1;
+
+	// Check if the phase is already at the party's maximum value.
+	if (turnPhase + steps <= 2) {
+		// Scan the party forwards for an alive member.
+		while (party[turnPhase + steps].current.hp <= 0) {
+			steps += 1;
+			if (turnPhase + steps > 2) {
+				break;
+			}
+		}
+	}
+	game.turnPhase += steps;
+}
+
+/**
+ * Moves the character selection to the previous available phase.
+ *
+ * @param {Game} game - The game object
+ */
+const phaseBack = function(game) {
+	const { party, turnPhase} = game;
+	
+	let steps = -1;
+
+	// Check if the phase is already at it's minimum value.
+	if (turnPhase + steps >= 0) {
+		// Check if the phase is already at the party's maximum value.
+		if (turnPhase + steps <= 2) {
+			// Scan the party backwards for an alive member.
+			while (party[turnPhase + steps].current.hp <= 0) {
+				if (turnPhase + steps < 1) {
+					break;
+				}
+				steps -= 1;
+			}
+		}
+	}
+	else {
+		steps = 0;
+	}
+	game.turnPhase += steps;
+}
+
 const processTurn = function(game) {
 	const { sketch, keys, keyNames, party } = game;
 
