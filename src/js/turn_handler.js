@@ -69,7 +69,7 @@ const phaseBack = function(game) {
 }
 
 const processTurn = function(game) {
-	const { sketch, keys, keyNames, party } = game;
+	const { sketch, keys, keyNames, party, tpBar } = game;
 
 	sketch.text(game.turnPhase, 610, 25); // for debugging purposes
 
@@ -84,6 +84,10 @@ const processTurn = function(game) {
 
 		// When an option is selected
 		if (keys.isPressed(keyNames.select)) {
+			// Add 16% TP if DEFENDing
+			if (party[game.turnPhase].menuSelection.category == 4) {
+				game.tpBar.percent += 16;
+			}
 			if(game.turnPhase != 2) {
 				phaseForward(game);
 			}
@@ -96,6 +100,9 @@ const processTurn = function(game) {
 		if (keys.isPressed(keyNames.cancel) && game.turnPhase != 0) {
 			// Move to a previous character that is alive.
 			phaseBack(game);
+			// Remove 16% TP if the previous party member (the one that's cancelled to) was DEFENDing.
+			if ((party[game.turnPhase].current.hp > 0) && (party[game.turnPhase].menuSelection.category == 4)) {
+				game.tpBar.percent -= 16;
 			}
 		}
 		//fallthrough
